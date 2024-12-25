@@ -1,0 +1,64 @@
+services:
+  web:
+    build: ./client
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+    depends_on:
+      - api
+  api:
+    build: ./server
+    ports:
+      - "8080:8080"
+    environment:
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_DATABASE: ${PG_DATABASE}
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+    depends_on:
+      - postgres
+      - redis
+  postgres:
+    image: postgres:14
+    environment:
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_DATABASE: ${PG_DATABASE}
+    ports:
+      - "5432:5432" # Expose the port (only for development/debugging)
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persist data
+  worker:
+    build: ./server
+    command: node worker.js
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_DATABASE: ${PG_DATABASE}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      DATABASE_URL: ${DATABASE_URL}
+    deploy: # For scaling
+      replicas: 3
+      resources: # Set resource limits
+        limits:
+          cpus: '0.25' # Limit CPU usage per worker
+          memory: 256M # Limit memory per worker
+  redis:
+    image: redis:6.2-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - cache:/data
+
+volumes:
+  db_data:
+  cache:
