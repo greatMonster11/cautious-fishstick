@@ -12,7 +12,5 @@ Media Scraper
 - Do have the demo video of the working delivered submission included.
 - Imagine you're given 1 CPU and 1GB RAM server to run the BE, how can you scale your scraper to handle ~5000 URL at the same time
 
-Please upload your code to GitHub and the video to Loom/Google Drive/YouTube... Then share access with us.
-
 # cautious-fishstick
 
