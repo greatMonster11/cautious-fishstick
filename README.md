@@ -14,3 +14,9 @@ Media Scraper
 
 # cautious-fishstick
 
+Seeding the default user into DB after spin-up the containers successfull.
+Execute below command inside `api` container.
+
+```bash
+npx prisma db seed
+```
