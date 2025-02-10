@@ -13,8 +13,6 @@ RUN npm ci --omit=dev
 # Copy the rest of the application code
 COPY . .
 
-# RUN npm rebuild bcrypt
-
 # Build the application (if needed, e.g., for TypeScript)
 # RUN npm run build
 
@@ -28,17 +26,18 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/index.js ./
 COPY --from=builder /app/worker.js ./
+COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/src ./src
 
+RUN npx prisma generate
 
-ENV PG_USER=$PG_USER
-ENV PG_PASSWORD=$PG_PASSWORD
-ENV PG_DATABASE=$PG_DATABASE
+ENV POSTGRES_USER=$POSTGRES_USER
+ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+ENV POSTGRES_DATABASE=$POSTGRES_DATABASE
 ENV SECRET_KEY=$SECRET_KEY
 ENV REDIS_HOST=$REDIS_HOST
 ENV REDIS_PASSWORD=$REDIS_PASSWORD
 ENV DATABASE_URL=$DATABASE_URL
-
 
 # Expose the port your application listens on
 EXPOSE 8080

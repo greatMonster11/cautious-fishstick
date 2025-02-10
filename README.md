@@ -14,9 +14,38 @@ Media Scraper
 
 # cautious-fishstick
 
-Seeding the default user into DB after spin-up the containers successfull.
-Execute below command inside `api` container.
+## Getting started
+Refer to the `sample.env` to create the `.env` file. This file is madatory for containers.
+E.g. `cp sample.env .env`
 
-```bash
+Note: Please refer the the video demo for the working submission on user authentication and scraping scheduler.
+
+### Start the containers
+```sh
+docker-compose -f docker-compose-dev.yml up
+```
+
+## Prepare the database with sample user
+Sometimes the `postgres` container take longer time to finish the intialization than expected in this case.
+We should doing something more handly. Please refer to below command.
+
+### Create an `.env` inside `server` directory
+```sh
+cd server
+cp env.sample .env
+```
+
+### Install dependencies
+Required `npm` to be installed on your machine.
+```sh
+npm install
+```
+
+### Generate sample user
+```sh
+npx prisma migrate deploy
+```
+
+```sh
 npx prisma db seed
 ```
